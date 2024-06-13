@@ -6,7 +6,6 @@ app.use(express.json());
 const Contact = require("./Contact");
 // const { required } = require("nodemon/lib/config");
 const PORT = 200 || process.env.PORT;
-const seedContacts = require('./seeder');
 
 
 // CORS middleware
@@ -77,15 +76,5 @@ app.delete('/Contact/:id', async (req, res) => {
         res.json({ message: 'Contact deleted successfully', deletedContact });
     } catch (error) {
         res.json(error);
-    }
-});
-
-// Route to seed contacts
-app.get('/seed-contacts', async (req, res) => {
-    try {
-        const result = await seedContacts();
-        res.json(result);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
     }
 });
