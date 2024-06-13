@@ -56,3 +56,25 @@ app.post('/Contact', async (req, res) => {
     }
 
 })
+// Delete all contacts
+app.delete('/Contact', async (req, res) => {
+    try {
+        await Contact.deleteMany();
+        res.json({ message: 'All contacts deleted successfully' });
+    } catch (error) {
+        res.json(error);
+    }
+});
+
+// Delete a contact by _id
+app.delete('/Contact/:id', async (req, res) => {
+    try {
+        const deletedContact = await Contact.findByIdAndDelete({ _id: req.params.id });
+        if (!deletedContact) {
+            return res.status(404).json({ message: 'Contact not found' });
+        }
+        res.json({ message: 'Contact deleted successfully', deletedContact });
+    } catch (error) {
+        res.json(error);
+    }
+});
