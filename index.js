@@ -56,7 +56,7 @@ app.post('/Contact', async (req, res) => {
     }
 
 })
-// Delete all contacts
+// Delete all contacts // Delete all contacts
 app.delete('/Contact', async (req, res) => {
     try {
         await Contact.deleteMany();
