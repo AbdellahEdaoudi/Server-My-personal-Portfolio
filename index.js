@@ -6,6 +6,7 @@ app.use(express.json());
 const Contact = require("./Contact");
 // const { required } = require("nodemon/lib/config");
 const PORT = 200 || process.env.PORT;
+const path = require("path")
 
 
 // CORS middleware
@@ -43,7 +44,6 @@ app.get('/Contact', async (req, res) => {
     }
 
 })
-
 app.post('/Contact', async (req, res) => {
 
     try {
@@ -65,7 +65,6 @@ app.delete('/Contact', async (req, res) => {
         res.json(error);
     }
 });
-
 // Delete a contact by _id
 app.delete('/Contact/:id', async (req, res) => {
     try {
@@ -77,4 +76,19 @@ app.delete('/Contact/:id', async (req, res) => {
     } catch (error) {
         res.json(error);
     }
+});
+
+app.use("/",express.static(path.join(__dirname,"public")));
+app.get('/',(req,res)=>{
+  res.sendFile(path.join(__dirname,"./Views/index.html"))
+})
+app.all("*", (req, res) => {
+  res.status(404);
+  if (req.accepts("html")) {
+    res.sendFile(path.join(__dirname, "views", "404.html"));
+  } else if (req.accepts("json")) {
+    res.json({ message: "404 Not Found" });
+  } else {
+    res.type("txt").send("404 Not Found");
+  }
 });
