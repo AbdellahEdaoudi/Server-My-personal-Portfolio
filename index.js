@@ -1,7 +1,8 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-const Contact = require("./models/Contact");
+const cors = require("cors")
+const cookieParser = require('cookie-parser');
 const PORT = 200 || process.env.PORT;
 const path = require("path");
 const { corsOption } = require('./config/corsoptions');
@@ -11,7 +12,7 @@ const contactController = require('./controllers/contactController');
 
 connectDB()
 app.use(cors(corsOption));
-app.use(cookiesParser())
+app.use(cookieParser())
 app.use(express.json());
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
