@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-const Contact = require("./Contact");
+const Contact = require("./models/Contact");
 const PORT = 200 || process.env.PORT;
 const path = require("path");
 const { corsOption } = require('./config/corsoptions');
