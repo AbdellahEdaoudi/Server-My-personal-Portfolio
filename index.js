@@ -5,7 +5,7 @@ const cors = require("cors")
 const cookieParser = require('cookie-parser');
 const PORT = 200 || process.env.PORT;
 const path = require("path");
-const { corsOption } = require('./config/corsoptions');
+const { corsOption } = require(path.join(__dirname, 'config', 'corsOptions'));
 const { connectDB } = require("./config/dbConnect");
 const contactController = require('./controllers/contactController');
 
