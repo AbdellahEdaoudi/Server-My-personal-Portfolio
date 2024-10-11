@@ -1,4 +1,3 @@
-// controllers/contactController.js
 const Contact = require('../models/Contact');
 
 // Get all contacts

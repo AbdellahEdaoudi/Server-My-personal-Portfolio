@@ -1,1 +1,1 @@
-exports.allowedOrigins = ["https://ed-portfolioo.vercel.app","http://localhost:3000"]
+exports.allowedOrigins = ["https://ed-portfolioo.vercel.app","https://edaoudi-portfolio.vercel.app","http://localhost:3000"]

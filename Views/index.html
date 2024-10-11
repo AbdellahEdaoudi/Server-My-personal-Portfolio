@@ -1,12 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abdellha Edaoudi</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Abdellah Edaoudi</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0F2027, #2C5364);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #00C9FF;
+            text-shadow: 3px 5px 15px rgba(0, 0, 0, 0.6);
+            animation: fadeIn 2s ease-in-out forwards;
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+
+        h1:hover {
+            color: #FFD700;
+            transform: scale(1.1);
+        }
+
+        /* حركة الظهور */
+        @keyframes fadeIn {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0,0,0,0) 30%, rgba(0,0,0,0.5) 70%);
+            animation: rotateBg 10s infinite linear;
+        }
+
+        @keyframes rotateBg {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .glow-effect {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            background: rgba(0, 201, 255, 0.3);
+            border-radius: 50%;
+            filter: blur(100px);
+            animation: pulse 4s infinite alternate;
+            z-index: -1;
+        }
+
+        @keyframes pulse {
+            to {
+                transform: translate(-50%, -50%) scale(1.2);
+            }
+        }
+
+        .button {
+            padding: 10px 20px;
+            margin-top: 20px;
+            background-color: #00C9FF;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            text-decoration: none;
+        }
+
+        .button:hover {
+            background-color: #FFD700;
+            transform: scale(1.1);
+        }
+
+    </style>
 </head>
+
 <body>
-    <h1>Portfolio Api</h1>
+    <div class="glow-effect"></div>
+    <div>
+        <h1>Server My Portfolio</h1>
+    </div>
 </body>
 </html>
