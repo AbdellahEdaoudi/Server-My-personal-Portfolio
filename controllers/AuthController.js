@@ -1,7 +1,6 @@
 
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const Usr = require("../models/User");
 const User = require("../models/User");
 
 exports.registerUser = async (req, res) => {
@@ -10,12 +9,12 @@ exports.registerUser = async (req, res) => {
     return res.status(400).json({ message: "All fields are required" });
   }
   try {
-    const foundUser = await Usr.findOne({ email }).exec();
+    const foundUser = await User.findOne({ email }).exec();
     if (foundUser) {
       return res.status(401).json({ message: "User already exists" });
     }
     const hashedPassword = await bcrypt.hash(pass, 10);
-    const user = new Usr({ name, email, pass: hashedPassword, role });
+    const user = new User({ name, email, pass: hashedPassword, role });
     await user.save();
     const accessToken = jwt.sign(
       { UserInfo: { id: user._id, role: user.role } },
@@ -33,12 +32,7 @@ exports.registerUser = async (req, res) => {
       sameSite: "None",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    res.json({
-      accessToken,
-      email: user.email,
-      name: user.name,
-      role: user.role
-    });
+    res.json({accessToken});
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
@@ -50,7 +44,7 @@ exports.loginUser = async (req, res) => {
   }
 
   try {
-    const foundUser = await Usr.findOne({ email }).exec();
+    const foundUser = await User.findOne({ email }).exec();
     if (!foundUser) {
       return res.status(401).json({ message: "User does not exist" });
     }
@@ -74,11 +68,7 @@ exports.loginUser = async (req, res) => {
     });
     res.json({
       accessToken,
-      email: foundUser.email,
-      name: foundUser.name,      
-      role: foundUser.role,
-
-    });
+      email: foundUser.email});
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }

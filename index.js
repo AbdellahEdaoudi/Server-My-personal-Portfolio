@@ -3,11 +3,13 @@ const express = require("express");
 const app = express();
 const cors = require("cors")
 const cookieParser = require('cookie-parser');
-const PORT = 200 || process.env.PORT;
+const PORT = process.env.PORT || 200;
 const path = require("path");
 const { corsOption } = require(path.join(__dirname, 'config', 'corsOptions'));
 const { connectDB } = require("./config/dbConnect");
 const contactController = require('./controllers/contactController');
+const AuthController = require("./controllers/AuthController");
+
 
 
 connectDB()
@@ -19,7 +21,7 @@ app.listen(PORT, () => {
 });
 
 // Contact Routes
-app.get('/Contact', contactController.getAllContacts);
+app.get('/contact', contactController.getAllContacts);
 app.post('/Contact', contactController.createContact);
 app.delete('/Contact', contactController.deleteAllContacts);
 app.delete('/Contact/:id', contactController.deleteContactById);
