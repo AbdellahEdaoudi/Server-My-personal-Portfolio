@@ -63,7 +63,7 @@ exports.loginUser = async (req, res) => {
     res.cookie("jwt", refreshToken, {
       httpOnly: true,
       secure: true,  // true for https
-      sameSite: "Strict",
+      sameSite: "Lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     res.json({
