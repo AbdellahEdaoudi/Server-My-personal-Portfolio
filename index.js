@@ -23,7 +23,11 @@ app.get('/Contact', contactController.getAllContacts);
 app.post('/Contact', contactController.createContact);
 app.delete('/Contact', contactController.deleteAllContacts);
 app.delete('/Contact/:id', contactController.deleteContactById);
-
+// Auth Routes
+app.post("/register", AuthController.registerUser);
+app.post("/login", AuthController.loginUser);
+app.post("/refresh", AuthController.refresh);
+app.post("/logout", AuthController.logout);
 
 
 app.use("/",express.static(path.join(__dirname,"public")));
