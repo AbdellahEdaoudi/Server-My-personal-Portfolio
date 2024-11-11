@@ -7,6 +7,8 @@ const PORT = process.env.PORT || 200;
 const path = require("path");
 const { corsOption } = require(path.join(__dirname, 'config', 'corsOptions'));
 const { connectDB } = require("./config/dbConnect");
+const { verifyJWT } = require("./middleware/verifyJWT");
+const { verifyRole } = require("./middleware/verifyRole");
 const contactController = require('./controllers/contactController');
 const AuthController = require("./controllers/AuthController");
 
@@ -21,15 +23,15 @@ app.listen(PORT, () => {
 });
 
 // Contact Routes
-app.get('/contact', contactController.getAllContacts);
+app.get('/contact',verifyJWT, verifyRole("admin"),contactController.getAllContacts);
 app.post('/Contact', contactController.createContact);
-app.delete('/Contact', contactController.deleteAllContacts);
-app.delete('/Contact/:id', contactController.deleteContactById);
+app.delete('/Contact',verifyJWT, verifyRole("admin"),contactController.deleteAllContacts);
+app.delete('/Contact/:id',verifyJWT, verifyRole("admin"),contactController.deleteContactById);
 // Auth Routes
-app.post("/register", AuthController.registerUser);
 app.post("/login", AuthController.loginUser);
 app.post("/refresh", AuthController.refresh);
 app.post("/logout", AuthController.logout);
+app.post("/register", AuthController.registerUser);
 
 
 app.use("/",express.static(path.join(__dirname,"public")));
