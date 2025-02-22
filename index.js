@@ -42,7 +42,7 @@ app.delete("/ips/:id",verifyJWT, verifyRole("admin"), IpAddressController.delete
 
 app.use("/",express.static(path.join(__dirname,"public")));
 app.get('/',(req,res)=>{
-  res.sendFile(path.join(__dirname,"./Views/index.html"))
+  res.sendFile(path.join(__dirname,"./views/index.html"))
 })
 app.all("*", (req, res) => {
   res.status(404);
