@@ -1,4 +1,4 @@
-const IpAddress = require("../models/ipaddress");
+const IpAddress = require("../models/IpAddress");
 const axios = require("axios");
 
 
