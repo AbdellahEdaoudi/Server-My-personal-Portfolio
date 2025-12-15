@@ -33,10 +33,6 @@ app.post("/login", AuthController.loginUser);
 app.post("/refresh", AuthController.refresh);
 app.post("/logout", AuthController.logout);
 app.post("/register", AuthController.registerUser);
-// IpAddress Routes
-app.post("/opera", IpAddressController.saveIpAddress);
-app.get("/ips",verifyJWT, verifyRole("admin"), IpAddressController.getAllIpAddresses);
-app.delete("/ips/:id",verifyJWT, verifyRole("admin"), IpAddressController.deleteIpAddressById);
 
 
 
