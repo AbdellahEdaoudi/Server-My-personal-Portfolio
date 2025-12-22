@@ -11,9 +11,28 @@ exports.getAllContacts = async (req, res) => {
 };
 
 // Create a new contact
+// Create a new contact
 exports.createContact = async (req, res) => {
     try {
-        const newContact = new Contact(req.body);
+        const { subject, email, message } = req.body;
+
+        // Check if all fields are present
+        if (!subject || !email || !message) {
+            return res.status(400).json({ error: "All fields are required" });
+        }
+
+        // Validate lengths to prevent huge payloads
+        if (subject.length > 100) {
+            return res.status(400).json({ error: "Subject is too long (max 100 chars)" });
+        }
+        if (email.length > 100) {
+            return res.status(400).json({ error: "Email is too long (max 100 chars)" });
+        }
+        if (message.length > 5000) {
+            return res.status(400).json({ error: "Message is too long (max 5000 chars)" });
+        }
+
+        const newContact = new Contact({ subject, email, message });
         const savedContact = await newContact.save();
         res.status(201).json(savedContact);
     } catch (error) {

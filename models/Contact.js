@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 
 const ConatctSchema = mongoose.Schema({
-    name: String,
+    subject: String,
     email: String,
-    msg: String,
+    message: String,
     created_at: {
         type: Date,
         default: Date.now(),

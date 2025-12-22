@@ -11,7 +11,6 @@ const { verifyJWT } = require("./middleware/verifyJWT");
 const { verifyRole } = require("./middleware/verifyRole");
 const contactController = require('./controllers/contactController');
 const AuthController = require("./controllers/AuthController");
-const IpAddressController = require("./controllers/IpAddressController");
 
 
 
