@@ -2,6 +2,7 @@ exports.allowedOrigins = [
     "https://abdellah-edaoudi.vercel.app",
     "https://ed-portfolioo.vercel.app",
     "https://edaoudi-portfolio.vercel.app",
+    "https://abdellah-edaoudi.site",
     "http://localhost:3000"
-  ];
+];
   
