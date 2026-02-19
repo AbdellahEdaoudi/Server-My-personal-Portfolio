@@ -1,4 +1,4 @@
-const Contact = require('../models/Contact');
+const Contact = require('../models/contact.model');
 
 // Get all contacts
 exports.getAllContacts = async (req, res) => {
@@ -10,7 +10,6 @@ exports.getAllContacts = async (req, res) => {
     }
 };
 
-// Create a new contact
 // Create a new contact
 exports.createContact = async (req, res) => {
     try {
