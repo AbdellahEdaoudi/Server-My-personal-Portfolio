@@ -11,18 +11,31 @@ const verifyJWT = (req, res, next) => {
     }
 
     if (!token) {
-        return res.status(401).json({ message: 'Unauthorized: No token provided' });
+        return res.status(401).json({
+            code: "TOKEN_MISSING",
+            message: "No access token"
+        });
     }
 
-    jwt.verify(
-        token,
-        process.env.ACCESS_TOKEN_SECRET,
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, 
         (err, decoded) => {
-            if (err) return res.status(403).json({ message: 'Forbidden: Invalid token' });
-            req.user = decoded;
-            next();
+        if (err) {
+            if (err.name === "TokenExpiredError") {
+                return res.status(401).json({
+                    code: "ACCESS_TOKEN_EXPIRED",
+                    message: "Access token expired"
+                });
+            }
+
+            return res.status(401).json({
+                code: "ACCESS_TOKEN_INVALID",
+                message: "Invalid access token"
+            });
         }
-    );
+
+        req.user = decoded;
+        next();
+    });
 };
 
 module.exports = { verifyJWT };

@@ -15,20 +15,12 @@ exports.register = async (req, res) => {
         }
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
-        let newUser;
-        if (role === "admin") {
-            newUser = new User({
-                email,
-                password: hashedPassword,
-                role: "user"
-            });
-        } else {
-            newUser = new User({
-                email,
-                password: hashedPassword,
-                role: "user"
-            });
-        }
+        const newUser = new User({
+            email,
+            password: hashedPassword,
+            role: "user"
+        });
+
         await newUser.save();
         res.status(201).json({
             message: 'User registered successfully',
@@ -59,25 +51,23 @@ exports.login = async (req, res) => {
         const accessToken = jwt.sign(
             { id: user._id, email: user.email, role: user.role },
             process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: '30m' }
+            { expiresIn: '5s' }
         );
         const refreshToken = jwt.sign(
             { id: user._id, email: user.email, role: user.role },
             process.env.REFRESH_TOKEN_SECRET,
-            { expiresIn: '7d' }
+            { expiresIn: '20s' }
         );
 
         res.cookie('accessToken', accessToken, {
-            httpOnly: false,
+            httpOnly: true,
             secure: true,
             sameSite: 'None',
-            maxAge: 30 * 60 * 1000
         });
         res.cookie('refreshToken', refreshToken, {
-            httpOnly: false,
+            httpOnly: true,
             secure: true,
             sameSite: 'None',
-            maxAge: 7 * 24 * 60 * 60 * 1000
         });
 
         res.status(200).json({
@@ -96,22 +86,30 @@ exports.login = async (req, res) => {
 exports.refresh = (req, res) => {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
-        return res.status(401).json({ message: 'No refresh token provided' });
+        return res.status(401).json({ code: "REFRESH_TOKEN_MISSING", message: 'No refresh token' });
     }
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
         if (err) {
-            return res.status(403).json({ message: 'Invalid refresh token' });
-        }
+         if (err.name === "TokenExpiredError") {
+           return res.status(401).json({
+             code: "REFRESH_TOKEN_EXPIRED",
+             message: "Refresh token expired"
+           });
+         }
+         return res.status(401).json({
+           code: "REFRESH_TOKEN_INVALID",
+           message: "Invalid refresh token"
+         });
+      }
         const accessToken = jwt.sign(
             { id: user.id, email: user.email, role: user.role },
             process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: '30m' }
+            { expiresIn: '5s' }
         );
         res.cookie('accessToken', accessToken, {
-            httpOnly: false,
+            httpOnly: true,
             secure: true,
             sameSite: 'None',
-            maxAge: 30 * 60 * 1000
         });
         res.json({ accessToken });
     });
@@ -119,6 +117,7 @@ exports.refresh = (req, res) => {
 
 
 exports.logout = (req, res) => {
-    res.clearCookie('accessToken');
+    res.clearCookie('accessToken', { httpOnly: true, secure: true, sameSite: 'None' });
+    res.clearCookie('refreshToken', { httpOnly: true, secure: true, sameSite: 'None' });
     res.json({ message: 'Cookie cleared' });
 };
