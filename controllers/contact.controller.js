@@ -1,9 +1,22 @@
 const Contact = require('../models/contact.model');
+const cloudinary = require('../config/cloudinary');
+
+// Helper: extract Cloudinary public_id from URL
+const extractPublicId = (imageUrl) => {
+    if (!imageUrl) return null;
+    try {
+        // URL format: https://res.cloudinary.com/<cloud>/image/upload/v<version>/<folder>/<public_id>.<ext>
+        const matches = imageUrl.match(/\/upload\/(?:v\d+\/)?(.+)\.[a-zA-Z]+$/);
+        return matches ? matches[1] : null;
+    } catch {
+        return null;
+    }
+};
 
 // Get all contacts
 exports.getAllContacts = async (req, res) => {
     try {
-        const contacts = await Contact.find();
+        const contacts = await Contact.find().select('-__v').lean();
         res.json(contacts);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -13,7 +26,7 @@ exports.getAllContacts = async (req, res) => {
 // Create a new contact
 exports.createContact = async (req, res) => {
     try {
-        const { subject, email, message } = req.body;
+        const { subject, email, message, image } = req.body;
 
         // Check if all fields are present
         if (!subject || !email || !message) {
@@ -31,7 +44,25 @@ exports.createContact = async (req, res) => {
             return res.status(400).json({ error: "Message is too long (max 5000 chars)" });
         }
 
-        const newContact = new Contact({ subject, email, message });
+        let imageUrl = null;
+        if (image) {
+            try {
+                const uploadResponse = await cloudinary.uploader.upload(image, {
+                    folder: 'contact_attachments',
+                });
+                imageUrl = uploadResponse.secure_url;
+            } catch (uploadError) {
+                console.error("Cloudinary upload error:", uploadError);
+                return res.status(500).json({ error: "Failed to upload image" });
+            }
+        }
+
+        const newContact = new Contact({
+            subject,
+            email,
+            message,
+            ...(imageUrl && { image: imageUrl })
+        });
         const savedContact = await newContact.save();
         res.status(201).json(savedContact);
     } catch (error) {
@@ -39,24 +70,50 @@ exports.createContact = async (req, res) => {
     }
 };
 
-// Delete all contacts
+// Delete all contacts (and their Cloudinary images)
 exports.deleteAllContacts = async (req, res) => {
     try {
+        const contacts = await Contact.find({ image: { $exists: true, $ne: null } });
+
+        // Delete all Cloudinary images in parallel
+        const deletePromises = contacts.map(contact => {
+            const publicId = extractPublicId(contact.image);
+            if (publicId) {
+                return cloudinary.uploader.destroy(publicId).catch(err =>
+                    console.error(`Failed to delete image ${publicId}:`, err)
+                );
+            }
+        }).filter(Boolean);
+
+        await Promise.all(deletePromises);
         await Contact.deleteMany();
+
         res.json({ message: 'All contacts deleted successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
 
-// Delete a contact by ID
+// Delete a contact by ID (and its Cloudinary image)
 exports.deleteContactById = async (req, res) => {
     try {
-        const deletedContact = await Contact.findByIdAndDelete(req.params.id);
-        if (!deletedContact) {
+        const contact = await Contact.findById(req.params.id);
+        if (!contact) {
             return res.status(404).json({ message: 'Contact not found' });
         }
-        res.json({ message: 'Contact deleted successfully', deletedContact });
+
+        // Delete image from Cloudinary if it exists
+        if (contact.image) {
+            const publicId = extractPublicId(contact.image);
+            if (publicId) {
+                await cloudinary.uploader.destroy(publicId).catch(err =>
+                    console.error(`Failed to delete image ${publicId}:`, err)
+                );
+            }
+        }
+
+        await Contact.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Contact deleted successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
