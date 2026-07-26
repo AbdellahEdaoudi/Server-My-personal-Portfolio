@@ -8,5 +8,7 @@ router.get('/', verifyJWT, verifyRole("admin"), contactController.getAllContacts
 router.post('/', contactController.createContact);
 router.delete('/', verifyJWT, verifyRole("admin"), contactController.deleteAllContacts);
 router.delete('/:id', verifyJWT, verifyRole("admin"), contactController.deleteContactById);
+router.patch('/:id/read', verifyJWT, verifyRole("admin"), contactController.markAsRead);
+router.patch('/:id/star', verifyJWT, verifyRole("admin"), contactController.toggleStarStatus);
 
 module.exports = router;

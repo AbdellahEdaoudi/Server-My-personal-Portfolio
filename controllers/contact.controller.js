@@ -118,3 +118,36 @@ exports.deleteContactById = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+// Update read status of a contact message
+exports.markAsRead = async (req, res) => {
+    try {
+        const contact = await Contact.findById(req.params.id);
+        if (!contact) {
+            return res.status(404).json({ message: 'Contact not found' });
+        }
+        const newReadState = typeof req.body.isRead === 'boolean' ? req.body.isRead : true;
+        contact.isRead = newReadState;
+        await contact.save();
+        res.json(contact);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Toggle or set starred status of a contact message
+exports.toggleStarStatus = async (req, res) => {
+    try {
+        const contact = await Contact.findById(req.params.id);
+        if (!contact) {
+            return res.status(404).json({ message: 'Contact not found' });
+        }
+        contact.isStarred = typeof req.body.isStarred === 'boolean' ? req.body.isStarred : !contact.isStarred;
+        await contact.save();
+        res.json(contact);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
