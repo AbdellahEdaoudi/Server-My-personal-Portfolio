@@ -86,21 +86,19 @@ exports.login = async (req, res) => {
 exports.refresh = (req, res) => {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
-        return res.status(401).json({ code: "REFRESH_TOKEN_MISSING", message: 'No refresh token' });
+        return res.status(401).json({ message: 'No refresh token provided' });
     }
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
         if (err) {
-         if (err.name === "TokenExpiredError") {
-           return res.status(401).json({
-             code: "REFRESH_TOKEN_EXPIRED",
-             message: "Refresh token expired"
-           });
-         }
-         return res.status(401).json({
-           code: "REFRESH_TOKEN_INVALID",
-           message: "Invalid refresh token"
-         });
-      }
+            if (err.name === "TokenExpiredError") {
+                return res.status(401).json({
+                    message: "Refresh token expired"
+                });
+            }
+            return res.status(401).json({
+                message: "Invalid refresh token"
+            });
+        }
         const accessToken = jwt.sign(
             { id: user.id, email: user.email, role: user.role },
             process.env.ACCESS_TOKEN_SECRET,
