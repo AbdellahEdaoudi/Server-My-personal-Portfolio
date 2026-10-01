@@ -21,6 +21,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use("/api/auth", require("./routes/auth.routes"));
 app.use("/api/contact", require("./routes/contact.routes"));
 app.use("/api/media", require("./routes/media.routes"));
+app.use("/api/email", require("./routes/email.routes"));
 
 
 
