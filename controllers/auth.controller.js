@@ -51,12 +51,12 @@ exports.login = async (req, res) => {
         const accessToken = jwt.sign(
             { id: user._id, email: user.email, role: user.role },
             process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: '1m' }
+            { expiresIn: '1d' }
         );
         const refreshToken = jwt.sign(
             { id: user._id, email: user.email, role: user.role },
             process.env.REFRESH_TOKEN_SECRET,
-            { expiresIn: '10m' }
+            { expiresIn: '7d' }
         );
 
         res.cookie('accessToken', accessToken, {
@@ -102,7 +102,7 @@ exports.refresh = (req, res) => {
         const accessToken = jwt.sign(
             { id: user.id, email: user.email, role: user.role },
             process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: '1m' }
+            { expiresIn: '1d' }
         );
         res.cookie('accessToken', accessToken, {
             httpOnly: true,
