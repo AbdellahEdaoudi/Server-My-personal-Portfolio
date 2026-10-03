@@ -37,6 +37,17 @@ const sendEmail = async (req, res) => {
       text: message,
     };
 
+    // Attach CV PDF if provided
+    if (req.file) {
+      mailOptions.attachments = [
+        {
+          filename: req.file.originalname || "CV_Abdellah_Edaoudi.pdf",
+          content: req.file.buffer,
+          contentType: "application/pdf",
+        },
+      ];
+    }
+
     await transporter.sendMail(mailOptions);
 
     return res.status(200).json({
