@@ -26,4 +26,26 @@ router.post(
   emailController.sendEmail
 );
 
+router.post(
+  "/send-bulk",
+  verifyJWT,
+  verifyRole("admin"),
+  upload.single("cv"),
+  emailController.sendBulkEmails
+);
+
+router.get(
+  "/status",
+  verifyJWT,
+  verifyRole("admin"),
+  emailController.getBulkStatus
+);
+
+router.post(
+  "/cancel",
+  verifyJWT,
+  verifyRole("admin"),
+  emailController.cancelBulkJob
+);
+
 module.exports = router;
