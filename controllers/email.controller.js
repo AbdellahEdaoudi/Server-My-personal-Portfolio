@@ -325,7 +325,8 @@ exports.cancelBulkJob = async (req, res) => {
 // POST /api/email/send (Single send for backwards compatibility)
 exports.sendEmail = async (req, res) => {
   try {
-    const { to, subject, message } = req.body;
+    const { to, subject, message, checkDuplicates } = req.body;
+    const skipDuplicateCheck = checkDuplicates === false || checkDuplicates === "false";
 
     if (!to || !subject || !message) {
       return res.status(400).json({
@@ -335,14 +336,16 @@ exports.sendEmail = async (req, res) => {
 
     const normalizedEmail = to.trim().toLowerCase();
 
-    // Check if email was already sent
-    const existing = await SentEmail.findOne({ email: normalizedEmail });
-    if (existing) {
-      return res.status(200).json({
-        success: false,
-        skipped: true,
-        message: `Email has already been sent to (${normalizedEmail}). Skipped.`,
-      });
+    // Check if email was already sent (only if duplicate check is enabled)
+    if (!skipDuplicateCheck) {
+      const existing = await SentEmail.findOne({ email: normalizedEmail });
+      if (existing) {
+        return res.status(200).json({
+          success: false,
+          skipped: true,
+          message: `Email has already been sent to (${normalizedEmail}). Skipped.`,
+        });
+      }
     }
 
     const transporter = getTransporter();
